@@ -9,7 +9,7 @@ use Illuminate\Contracts\Container\BindingResolutionException;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use App\Domains\User\Jobs\FindUserJob;
 
-class CheckValidUserCanSendMessageOperation
+class CheckValidUserCanSendMessageOrBlockOperation
 {
     /**
      * Create a new operation instance.

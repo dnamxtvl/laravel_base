@@ -5,7 +5,7 @@ namespace App\Features;
 use App\Domains\Chat\Enums\StatusMessageEnums;
 use App\Domains\Chat\Jobs\ChangeStatusOfMessageJob;
 use App\Domains\Chat\Jobs\GetDetailMessageJob;
-use App\Operations\CheckValidUserCanSendMessageOperation;
+use App\Operations\CheckValidUserCanSendMessageOrBlockOperation;
 use App\Operations\RespondWithJsonTraitOperation;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Http\JsonResponse;
@@ -25,7 +25,7 @@ class GetListMessageDetailFeature
     public function handle(): JsonResponse
     {
 
-        (new CheckValidUserCanSendMessageOperation(toUserId: $this->toUserId))->handle();
+        (new CheckValidUserCanSendMessageOrBlockOperation(toUserId: $this->toUserId))->handle();
 
         (new ChangeStatusOfMessageJob(
             fromUserId: Auth::id(),

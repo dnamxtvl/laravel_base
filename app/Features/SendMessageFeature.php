@@ -3,7 +3,7 @@
 namespace App\Features;
 
 use App\Domains\Chat\Jobs\SendMessageJob;
-use App\Operations\CheckValidUserCanSendMessageOperation;
+use App\Operations\CheckValidUserCanSendMessageOrBlockOperation;
 use App\Operations\RespondWithJsonErrorTraitOperation;
 use App\Operations\RespondWithJsonTraitOperation;
 use Exception;
@@ -22,7 +22,7 @@ class SendMessageFeature
     public function handle(): JsonResponse
     {
         try {
-            (new CheckValidUserCanSendMessageOperation(
+            (new CheckValidUserCanSendMessageOrBlockOperation(
                 toUserId: $this->toUserId
             ))->handle();
 

@@ -3,7 +3,7 @@
 namespace App\Features;
 
 use App\Operations\BlockUserAndDeleteMessageOfConversationOperation;
-use App\Operations\CheckValidUserCanSendMessageOperation;
+use App\Operations\CheckValidUserCanSendMessageOrBlockOperation;
 use App\Operations\RespondWithJsonErrorTraitOperation;
 use App\Operations\RespondWithJsonTraitOperation;
 use Exception;
@@ -22,13 +22,12 @@ class BlockUserFeature
     {
         DB::beginTransaction();
         try {
-            $fromUserId = Auth::id();
-            (new CheckValidUserCanSendMessageOperation(
+            (new CheckValidUserCanSendMessageOrBlockOperation(
                 toUserId: $this->toUserId)
             )->handle();
 
             (new BlockUserAndDeleteMessageOfConversationOperation(
-                fromUserId: $fromUserId, toUserId: $this->toUserId
+                fromUserId: Auth::id(), toUserId: $this->toUserId
             ))->handle();
 
             DB::commit();
