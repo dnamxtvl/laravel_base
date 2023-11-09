@@ -21,9 +21,9 @@ class GetListChatsFeature
      */
     public function handle(): JsonResponse
     {
-        $userId = Auth::id();
-        $listUsers = (new GetListChatJob(userId: $userId))->handle();
-        $latestToUserId = (new GetLatestUserIdSendMessageJob(userId: $userId))->handle();
+        $listUsers = (new GetListChatJob(userId: Auth::id()))->handle();
+        $latestToUserId = (new GetLatestUserIdSendMessageJob(userId: Auth::id()))->handle();
+
         $listChatResult = new ListChatResultDTO(
             listUsers: $listUsers,
             latestToUserId: $latestToUserId
