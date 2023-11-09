@@ -24,7 +24,6 @@ class GetListMessageDetailFeature
      */
     public function handle(): JsonResponse
     {
-
         (new CheckValidUserCanSendMessageOrBlockOperation(toUserId: $this->toUserId))->handle();
 
         (new ChangeStatusOfMessageJob(
