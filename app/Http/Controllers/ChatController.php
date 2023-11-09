@@ -17,7 +17,6 @@ class ChatController extends Controller
 {
 
     public function __construct(
-
     ) {}
 
     /**
