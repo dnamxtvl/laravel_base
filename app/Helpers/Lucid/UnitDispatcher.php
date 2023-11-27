@@ -33,7 +33,7 @@ trait UnitDispatcher
      *
      * @return mixed
      */
-    public function run($unit, $arguments = [], $extra = [])
+    public function run($unit, $arguments = [], $extra = []): mixed
     {
         if (is_object($unit) && !App::runningUnitTests()) {
             $result = $this->dispatchSync($unit);
@@ -83,21 +83,19 @@ trait UnitDispatcher
      * @return mixed
      * @throws ReflectionException
      */
-    public function runInQueue($unit, $arguments = [], $extra = [])
+    public function runInQueue($unit, $arguments = [], $extra = []): void
     {
         // instantiate and queue the unit
         if (is_object($unit) && !App::runningUnitTests()) {
-            $result = $this->dispatch($unit);
+            $this->dispatch($unit);
         } elseif ($arguments instanceof Request) {
-            $result = $this->dispatch($this->marshal($unit, $arguments, $extra));
+            $this->dispatch($this->marshal($unit, $arguments, $extra));
         } else {
             if (!is_object($unit)) {
                 $unit = $this->marshal($unit, new Collection(), $arguments);
             }
 
-            $result = $this->dispatch($unit);
+            $this->dispatch($unit);
         }
-
-        return $result;
     }
 }
