@@ -83,7 +83,7 @@ trait UnitDispatcher
      * @return mixed
      * @throws ReflectionException
      */
-    public function runInQueue($unit, $arguments = [], $extra = []): void
+    public function runInQueue(mixed $unit, array $arguments = [], array $extra = []): void
     {
         // instantiate and queue the unit
         if (is_object($unit) && !App::runningUnitTests()) {
