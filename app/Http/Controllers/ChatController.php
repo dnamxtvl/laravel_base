@@ -54,6 +54,6 @@ class ChatController extends Controller
     {
        return $this->dispatchSync(new UnBlockUserFeature(
             toUserId: $request->input('to_user_id')
-        ));
+       ));
     }
 }
