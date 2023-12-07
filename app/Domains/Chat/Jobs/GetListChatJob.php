@@ -3,7 +3,7 @@
 namespace App\Domains\Chat\Jobs;
 
 use App\Domains\User\Repository\UserRepositoryInterface;
-use Illuminate\Contracts\Container\BindingResolutionException;
+use App\Jobs\TestQueue;
 use Illuminate\Database\Eloquent\Collection;
 
 class GetListChatJob
@@ -17,12 +17,9 @@ class GetListChatJob
         private readonly int $userId
     ) {}
 
-    /**
-     * @throws BindingResolutionException
-     */
-    public function handle(): Collection
+    public function handle(UserRepositoryInterface $userRepository): Collection
     {
-        $userRepository = app()->make(UserRepositoryInterface::class);
+        TestQueue::dispatch();
         return $userRepository->getListUserHasConversation(userId: $this->userId);
     }
 }

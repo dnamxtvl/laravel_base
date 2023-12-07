@@ -4,7 +4,6 @@ namespace App\Domains\User\Jobs;
 
 use App\Domains\User\Enums\UserStatusEnum;
 use App\Domains\User\Repository\UserRepositoryInterface;
-use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Database\Eloquent\Model;
 
 class FindUserJob
@@ -18,12 +17,8 @@ class FindUserJob
         private readonly int $userId
     ) {}
 
-    /**
-     * @throws BindingResolutionException
-     */
-    public function handle(): Model|null
+    public function handle(UserRepositoryInterface $userRepository): Model|null
     {
-        $userRepository = app()->make(UserRepositoryInterface::class);
         $user = $userRepository->findById(id: $this->userId);
 
         if (is_null($user)) {

@@ -17,7 +17,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        $this->app->singleton(UserRepositoryInterface::class, UserRepository::class);
+        $this->app->bind(UserRepositoryInterface::class, UserRepository::class);
         $this->app->singleton(ChatRepositoryInterface::class, ChatRepository::class);
         $this->app->singleton(UserBlockRepositoryInterface::class, UserBlockRepository::class);
     }

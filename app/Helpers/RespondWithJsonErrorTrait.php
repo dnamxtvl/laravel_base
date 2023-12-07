@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Operations;
+namespace App\Helpers;
 
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 
-trait RespondWithJsonErrorTraitOperation
+trait RespondWithJsonErrorTrait
 {
     protected function respondWithJsonError(
         Exception $e,

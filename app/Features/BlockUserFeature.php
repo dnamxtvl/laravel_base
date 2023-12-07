@@ -2,18 +2,16 @@
 
 namespace App\Features;
 
+use App\Helpers\Service;
 use App\Operations\BlockUserAndDeleteMessageOfConversationOperation;
 use App\Operations\CheckValidUserCanSendMessageOperation;
-use App\Operations\RespondWithJsonErrorTraitOperation;
-use App\Operations\RespondWithJsonTraitOperation;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
-class BlockUserFeature
+class BlockUserFeature extends Service
 {
-    use RespondWithJsonTraitOperation, RespondWithJsonErrorTraitOperation;
     public function __construct(
         private readonly int $toUserId
     ) {}
@@ -23,13 +21,14 @@ class BlockUserFeature
         DB::beginTransaction();
         try {
             $fromUserId = Auth::id();
-            (new CheckValidUserCanSendMessageOperation(
-                toUserId: $this->toUserId)
-            )->handle();
+            $this->dispatchSync(new CheckValidUserCanSendMessageOperation(
+                toUserId: $this->toUserId
+            ));
 
-            (new BlockUserAndDeleteMessageOfConversationOperation(
-                fromUserId: $fromUserId, toUserId: $this->toUserId
-            ))->handle();
+            $this->dispatchSync(new BlockUserAndDeleteMessageOfConversationOperation(
+                fromUserId: $fromUserId,
+                toUserId: $this->toUserId
+            ));
 
             DB::commit();
             return $this->respondWithJson(content: []);

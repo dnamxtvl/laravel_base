@@ -6,8 +6,7 @@ use App\Domains\User\Enums\UserExceptionEnum;
 use App\Domains\User\Exceptions\UserNotFoundException;
 use App\Domains\User\Jobs\CheckIsBlockedJob;
 use App\Domains\User\Jobs\FindUserJob;
-use App\Operations\RespondWithJsonErrorTraitOperation;
-use App\Operations\RespondWithJsonTraitOperation;
+use App\Helpers\Service;
 use App\Operations\UnBlockUserAndRestoreMessageOfConversationOperation;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -15,9 +14,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
-class UnBlockUserFeature
+class UnBlockUserFeature extends Service
 {
-    use RespondWithJsonErrorTraitOperation, RespondWithJsonTraitOperation;
     public function __construct(
         private readonly int $toUserId
     ) {
@@ -28,20 +26,20 @@ class UnBlockUserFeature
         DB::beginTransaction();
         try {
             $fromUserId = Auth::id();
-            $user = (new FindUserJob(userId: $this->toUserId))->handle();
+            $user = $this->dispatchSync(new FindUserJob(userId: $this->toUserId));
             if (is_null($user)) {
                 throw new UserNotFoundException(code:UserExceptionEnum::USER_NOT_FOUND_WHEN_UNBLOCK->value);
             }
 
-            $checkIsBlocked = (new CheckIsBlockedJob(toUserId: $this->toUserId))->handle();
+            $checkIsBlocked = $this->dispatchSync(new CheckIsBlockedJob(toUserId: $this->toUserId));
             if ($checkIsBlocked) {
                 throw new AccessDeniedHttpException('User chưa hề bị chăn!');
             }
 
-            (new UnBlockUserAndRestoreMessageOfConversationOperation(
+            $this->dispatchSync(new UnBlockUserAndRestoreMessageOfConversationOperation(
                 fromUserId: $fromUserId,
-                toUserId: $this->toUserId)
-            )->handle();
+                toUserId: $this->toUserId
+            ));
 
             DB::commit();
             return $this->respondWithJson(content: []);

@@ -3,7 +3,6 @@
 namespace App\Domains\Chat\Jobs;
 
 use App\Domains\Chat\Repository\ChatRepositoryInterface;
-use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Database\Eloquent\Collection;
 
 class GetDetailMessageJob
@@ -20,12 +19,8 @@ class GetDetailMessageJob
         private readonly int $offset
     ) {}
 
-    /**
-     * @throws BindingResolutionException
-     */
-    public function handle(): Collection
+    public function handle(ChatRepositoryInterface $chatRepository): Collection
     {
-        $chatRepository = app()->make(ChatRepositoryInterface::class);
         return $chatRepository->getMessageDetail(
             fromUserId: $this->fromUserId,
             toUserId: $this->toUserId,

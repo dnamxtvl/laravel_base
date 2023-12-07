@@ -5,25 +5,21 @@ namespace App\Features;
 use App\Domains\Chat\Jobs\GetLatestUserIdSendMessageJob;
 use App\Domains\Chat\Jobs\GetListChatJob;
 use App\Features\DTOs\ListChatResultDTO;
-use App\Operations\RespondWithJsonTraitOperation;
-use Illuminate\Contracts\Container\BindingResolutionException;
+use App\Helpers\Service;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 
-class GetListChatsFeature
+class GetListChatsFeature extends Service
 {
-    use RespondWithJsonTraitOperation;
     public function __construct(
     ) {}
 
-    /**
-     * @throws BindingResolutionException
-     */
     public function handle(): JsonResponse
     {
-        $userId = Auth::id();
-        $listUsers = (new GetListChatJob(userId: $userId))->handle();
-        $latestToUserId = (new GetLatestUserIdSendMessageJob(userId: $userId))->handle();
+        //$userId = Auth::id();
+        $userId = 1;
+        $listUsers = $this->dispatchSync(new GetListChatJob(userId: $userId));
+        $latestToUserId = $this->dispatchSync(new GetLatestUserIdSendMessageJob(userId: $userId));
         $listChatResult = new ListChatResultDTO(
             listUsers: $listUsers,
             latestToUserId: $latestToUserId

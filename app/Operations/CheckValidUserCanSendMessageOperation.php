@@ -5,11 +5,11 @@ namespace App\Operations;
 use App\Domains\User\Enums\UserExceptionEnum;
 use App\Domains\User\Exceptions\UserNotFoundException;
 use App\Domains\User\Jobs\CheckIsBlockedJob;
-use Illuminate\Contracts\Container\BindingResolutionException;
+use App\Helpers\Service;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use App\Domains\User\Jobs\FindUserJob;
 
-class CheckValidUserCanSendMessageOperation
+class CheckValidUserCanSendMessageOperation extends Service
 {
     /**
      * Create a new operation instance.
@@ -20,18 +20,15 @@ class CheckValidUserCanSendMessageOperation
         private readonly int $toUserId
     ) {}
 
-    /**
-     * @throws BindingResolutionException
-     */
     public function handle(): void
     {
-        $user = (new FindUserJob(userId: $this->toUserId))->$this->handle();
+        $user = $this->dispatchSync(new FindUserJob(userId: $this->toUserId));
 
         if (is_null($user)) {
             throw new UserNotFoundException(code: UserExceptionEnum::USER_NOT_FOUND_WHEN_CHECK_VALID_USER->value);
         }
 
-        $checkIsBlocked = (new CheckIsBlockedJob(toUserId: $this->toUserId))->handle();
+        $checkIsBlocked = $this->dispatchSync(new CheckIsBlockedJob(toUserId: auth()->id()));
 
         if (! $checkIsBlocked) {
             throw new AccessDeniedHttpException('Bạn và họ đã block nhau từ trước!');

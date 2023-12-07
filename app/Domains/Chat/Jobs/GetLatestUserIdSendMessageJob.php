@@ -3,7 +3,6 @@
 namespace App\Domains\Chat\Jobs;
 
 use App\Domains\Chat\Repository\ChatRepositoryInterface;
-use Illuminate\Contracts\Container\BindingResolutionException;
 
 class GetLatestUserIdSendMessageJob
 {
@@ -16,12 +15,8 @@ class GetLatestUserIdSendMessageJob
         private readonly int $userId
     ) {}
 
-    /**
-     * @throws BindingResolutionException
-     */
-    public function handle(): int
+    public function handle(ChatRepositoryInterface $chatRepository): int
     {
-        $chatRepository = app()->make(ChatRepositoryInterface::class);
         $latestToUser = $chatRepository->latestToUser(userId: $this->userId);
 
         return $latestToUser ? $latestToUser->to_user_id : $this->userId;
